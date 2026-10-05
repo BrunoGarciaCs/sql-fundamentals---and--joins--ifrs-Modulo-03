@@ -1,0 +1,80 @@
+01. Manipulação de Iniciais e Formatação de Texto com UPPER e SUBSTR
+Considere a tabela clientes com as colunas id, nome, cidade e email. Qual seria a consulta para selecionar o nome em maiúsculas (usando UPPER), a cidade e o email 
+de todos os clientes que moram nas cidades 'São Paulo' ou 'Rio de Janeiro' e cujo nome comece com a letra 'A' (extraída usando SUBSTR e igualada a 'A')?
+
+
+SELECT UPPER(cli.nome) AS Letra_maiuscula, cli.cidade, cli.email
+FROM clientes AS cli
+WHERE cli.cidade IN ('São Paulo', 'Rio de Janeiro') 
+AND cli.nome LIKE 'A%'
+AND SUBSTR(cli.nome, 1, 1) = 'A';
+
+
+
+
+
+02. Identificação de IDs Pares com MOD e Filtro de Comprimento com LENGTH
+Considere a tabela produtos com as colunas id_produto, nome, categoria e preco. Qual seria a consulta para listar o id_produto, o nome e o preco de todos os produtos
+cujo id_produto seja um número par (utilizando MOD(id_produto, 2) = 0), tenham o preço entre 50.00 e 300.00 e cujo nome do produto tenha mais de 10 caracteres 
+(utilizando LENGTH)? 
+
+
+SELECT prod.id_produto, prod.nome, prod.preco
+FROM produtos AS prod
+WHERE MOD(prod.id_produto, 2)= 0 
+AND prod.preco BETWEEN 50.00 AND 300.00
+AND LENGTH(prod.nome) > 10
+ORDER BY prod.preco ASC;
+
+
+
+  
+
+03. Substituição de Texto com REPLACE e Leitura de Padrões
+Considere a tabela funcionarios com as colunas id, nome, cargo, departamento e salario. Qual seria a consulta para retornar o nome, o cargo e uma coluna alterada do 
+departamento onde a palavra 'TI' seja substituída por 'Tecnologia da Informação' (usando REPLACE), apenas para funcionários com salário maior ou igual a 4000.00 e 
+cujo cargo contenha a palavra 'Analista'?
+
+
+SELECT func.nome, func.cargo, REPLACE(func.departamento, 'TI', 'Tecnologia da Informação') AS dep_modificado
+FROM funcionarios AS func
+WHERE func.salario >= 4000.00 
+AND func.cargo LIKE '%Analista%'
+ORDER BY func.nome ASC;
+
+
+
+
+
+04. Padronização de Nomes com INITCAP e Restrição de Caracteres
+Considere a tabela alunos com as colunas id, nome, curso e nota_final. Qual seria a consulta para exibir o nome formatado com a primeira letra de cada palavra 
+maiúscula (usando INITCAP), o curso e a nota_final, filtrando apenas alunos dos cursos 'Sistemas de Informação' ou 'Ciência da Computação', com nota fora do 
+intervalo 0.0 a 5.9 (NOT BETWEEN) e cujo nome tenha pelo menos 15 caracteres no total?
+
+
+SELECT INITCAP(alu.nome) nome_aluno, alu.curso, alu.nota_final
+FROM alunos AS alu
+WHERE alu.curso IN ('Sistemas de Informação', 'Ciência da Computação')
+AND alu.nota_final NOT BETWEEN 0.0 AND 5.9 
+AND LENGTH(alu.nome) >= 15
+ORDER BY nome_aluno ASC;
+
+
+
+
+
+05. Combinação Avançada: SUBSTR, LENGTH, MOD e Negação de Lista (NOT IN)
+Considere a tabela pedidos com as colunas id_pedido, cliente_id, codigo_rastreio, valor_total e status. Qual seria a consulta para retornar o id_pedido, os primeiros
+3 caracteres do código de rastreio (usando SUBSTR) e o valor_total de todos os pedidos cujo id_pedido seja ímpar (MOD(id_pedido, 2) <> 0), o valor total seja 
+estritamente maior que 100.00, o status não seja nem 'Cancelado' nem 'Devolvido' e o código de rastreio tenha exatamente 8 caracteres?
+
+
+SELECT ped.id_pedido, SUBSTR(ped.codigo_rastreio, 1, 3), ped.valor_total
+FROM pedidos AS ped
+WHERE MOD(ped.id_pedido, 2) <> 0 
+AND ped.valor_total > 100.00 
+AND ped.status NOT IN ('Cancelado', 'Devolvido')
+AND LENGTH(ped.codigo_rastreio) = 8
+ORDER BY ped.id_pedido ASC;
+
+

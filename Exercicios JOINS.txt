@@ -1,0 +1,164 @@
+🗄️ Prática de Banco de Dados: Lista de Exercícios em SQL - Junções (Joins) e Funções Avançadas
+Este repositório contém uma lista de exercícios práticos em SQL focados no uso de JOINs (INNER, LEFT, RIGHT, FULL OUTER) e funções de manipulação de dados. O material foi desenvolvido como forma de reforço e fixação de conteúdos para o curso do Instituto Federal do Rio Grande do Sul (IFRS).
+
+🎯 Objetivo do Arquivo
+O objetivo deste documento é registrar o avanço prático no aprendizado de manipulação e consulta de dados relacionais entre múltiplas tabelas. Para potencializar os estudos, utilizei Inteligência Artificial para a criação de cenários e enunciados de banco de dados (envolvendo pedidos, clientes, funcionários, cursos, produtos, chamados e veículos), permitindo praticar a escrita manual de queries estruturadas, regras lógicas complexas e boas práticas de formatação.
+
+🛠️ Comandos e Conceitos Praticados
+Nesta lista, foram trabalhados comandos e funções essenciais para a integração e higienização de dados em SQL:
+
+Tipos de Junção (JOIN):
+
+INNER JOIN: Retorno exclusivo de dados com correspondência entre tabelas.
+
+LEFT JOIN: Preservação de todos os registros da tabela à esquerda, mesmo sem correspondente.
+
+RIGHT JOIN: Priorização dos dados da tabela à direita na junção.
+
+FULL OUTER JOIN: Mapeamento e auditoria completa de registros de ambas as tabelas.
+
+Tratamento e Manipulação de Texto:
+
+UPPER() / LOWER(): Conversão de strings para maiúsculas ou minúsculas.
+
+REPLACE(): Substituição de caracteres ou siglas em colunas textuais.
+
+LENGTH(): Validação do número de caracteres de um campo.
+
+LIKE / ILIKE: Busca por padrões de texto (com ou sem diferenciação de maiúsculas e minúsculas).
+
+Funções Lógicas e de Tratamento de Nulos:
+
+COALESCE(): Substituição de valores nulos (NULL) por um valor padrão.
+
+MOD(): Operação matemática de resto da divisão para checagem de paridade (par/ímpar).
+
+AND / OR / Parênteses: Prioridade e isolamento de condições lógicas no WHERE.
+
+BETWEEN / NOT IN: Filtros por faixas de valores e exclusão por lista.
+
+📝 Enunciados e Soluções SQL
+1. Consulta Relacional com INNER JOIN, Filtro Paridade (MOD) e Negação de Lista (NOT IN)
+Enunciado: Considere a tabela pedidos (com as colunas id_pedido, cliente_id, data_pedido, valor_total) e a tabela clientes (com as colunas id_cliente, nome, cidade, status_conta). Qual seria a consulta para retornar o id_pedido, o nome do cliente em maiúsculas (UPPER), a cidade e o valor_total, unindo as tabelas via INNER JOIN, filtrando apenas pedidos onde o id_pedido seja um número par (MOD(ped.id_pedido, 2) = 0), o valor_total esteja entre 150.00 e 800.00 (BETWEEN), a cidade do cliente não esteja na lista ('Curitiba', 'Porto Alegre') (NOT IN) e o status da conta seja diferente de 'Inativo' (<>)?
+
+SQL
+SELECT ped.id_pedido, UPPER(cli.nome) AS nome_cliente, cli.cidade, ped.valor_total
+FROM pedidos AS ped
+INNER JOIN clientes AS cli ON ped.cliente_id = cli.id_cliente
+WHERE MOD(ped.id_pedido, 2) = 0 
+AND ped.valor_total BETWEEN 150.00 AND 800.00
+AND cli.cidade NOT IN ('Curitiba', 'Porto Alegre') 
+AND cli.status_conta <> 'Inativo'
+ORDER BY ped.id_pedido ASC;
+2. Junção com LEFT JOIN, Checagem de Comprimento (LENGTH) e Busca Por Padrão (LIKE)
+Enunciado: Considere a tabela funcionarios (com as colunas id_funcionario, nome, departamento_id, cargo) e a tabela departamentos (com as colunas id_departamento, nome_dep, orcamento). Qual seria a consulta para exibir o nome do funcionário, o cargo e o nome_dep (substituindo a sigla 'ADM' por 'Administração' usando REPLACE), fazendo um LEFT JOIN entre funcionários e departamentos, filtrando apenas os funcionários cujo cargo contenha a palavra 'Gerente' (LIKE), que tenham o nome com comprimento maior que 12 caracteres (LENGTH), pertencentes a departamentos com orçamento maior ou igual a 50000.00 (>=) e cujo id_funcionario seja um número ímpar (MOD(func.id_funcionario, 2) <> 0)?
+
+SQL
+SELECT func.nome, func.cargo, REPLACE(dep.nome_dep, 'ADM', 'Administração') AS nome_departamento
+FROM funcionarios AS func
+LEFT JOIN departamentos AS dep ON func.departamento_id = dep.id_departamento
+WHERE func.cargo LIKE '%Gerente%'
+AND LENGTH(func.nome) > 12
+AND dep.orcamento >= 50000.00
+AND MOD(func.id_funcionario, 2) <> 0
+ORDER BY func.cargo ASC;
+3. Junção com INNER JOIN, Modificação de Texto (REPLACE) e Filtro de Comprimento (LENGTH)
+Enunciado: Considere a tabela produtos (com as colunas id_produto, nome_produto, categoria_id, preco) e a tabela categorias (com as colunas id_categoria, nome_categoria, desconto_padrao). Qual seria a consulta para exibir o nome_produto com a palavra 'Pro' substituída por 'Profissional' usando REPLACE, o preço do produto e o nome_categoria, fazendo INNER JOIN entre produtos e categorias, filtrando apenas os produtos cujo preço seja menor ou igual a 1500.00 (<=), cujo nome_produto tenha um comprimento maior que 8 caracteres (LENGTH), pertencentes a categorias em que o desconto_padrao seja diferente de 0.00 (<>), e cujo id_produto seja um número par (MOD(prod.id_produto, 2) = 0)?
+
+SQL
+SELECT REPLACE(prod.nome_produto, 'Pro', 'Profissional') AS nome_produto, prod.preco, cat.nome_categoria
+FROM produtos AS prod
+INNER JOIN categorias AS cat ON prod.categoria_id = cat.id_categoria
+WHERE prod.preco <= 1500.00
+AND LENGTH(prod.nome_produto) > 8
+AND cat.desconto_padrao <> 0.00
+AND MOD(prod.id_produto, 2) = 0
+ORDER BY prod.id_produto ASC;
+4. Junção com RIGHT JOIN, Busca de Padrão (LIKE) e Operadores Relacionais
+Enunciado: Considere a tabela clientes (com as colunas id_cliente, nome_cliente, cidade) e a tabela pedidos (com as colunas id_pedido, cliente_id, valor_total, status_pedido). Qual seria a consulta para exibir o id_pedido, o valor_total e nome_cliente (substituindo o texto 'S/N' por 'Sem nome' usando REPLACE), fazendo um RIGHT JOIN entre a tabela pedidos e tabela clientes, filtrando apenas os pedidos com status_pedido que contenha o termo 'Enviado' (LIKE), onde o valor_total do pedido seja estritamente maior que 250.00 (>) e menor que 5000.00 (<), e o id_cliente seja diferente de 10 (<>)?
+
+SQL
+SELECT ped.id_pedido, ped.valor_total, REPLACE(cli.nome_cliente, 'S/N', 'Sem nome') AS nome_cliente
+FROM pedidos AS ped
+RIGHT JOIN clientes AS cli ON ped.cliente_id = cli.id_cliente
+WHERE ped.status_pedido LIKE '%Enviado%'
+AND ped.valor_total > 250.00 AND ped.valor_total < 5000.00
+AND cli.id_cliente <> 10
+ORDER BY ped.id_pedido ASC;
+5. Junção com LEFT JOIN, Manipulação de Texto e Múltiplos Filtros Comparativos
+Enunciado: Considere a tabela projetos (com as colunas id_projeto, titulo_projeto, orcamento_alocado, gerente_id) e a tabela colaboradores (com as colunas id_colaborador, nome_colaborador, nivel_cargo). Qual seria a consulta para exibir o titulo_projeto, orcamento_alocado e nome_colaborador (substituindo a sigla 'JR' por 'Junior' no nivel_cargo usando REPLACE), fazendo um LEFT JOIN relacionando projetos e colaboradores (onde gerente_id = id_colaborador), filtrando apenas os projetos onde o titulo_projeto inicie com a letra 'A' (LIKE 'A%'), tenham o comprimento do título maior ou igual a 10 caracteres (LENGTH >= 10), orcamento_alocado seja maior ou igual a 75000.00 (>=), e o id_projeto não seja igual a 5 (<> 5)?
+
+SQL
+SELECT proj.titulo_projeto, proj.orcamento_alocado, col.nome_colaborador, REPLACE(col.nivel_cargo, 'JR', 'Junior') AS nivel_cargo
+FROM projetos AS proj
+LEFT JOIN colaboradores AS col ON proj.gerente_id = col.id_colaborador
+WHERE proj.titulo_projeto LIKE 'A%' 
+AND LENGTH(proj.titulo_projeto) >= 10
+AND proj.orcamento_alocado >= 75000.00
+AND proj.id_projeto <> 5
+ORDER BY proj.titulo_projeto ASC;
+6. Junção com FULL OUTER JOIN, Maiúsculas (UPPER) e Múltiplas Comparações
+Enunciado: Considere a tabela fornecedores (com as colunas id_fornecedor, nome_fornecedor, cidade_origem, status_ativo) e a tabela suprimentos (com as colunas id_suprimento, fornecedor_id, nome_item, quantidade_estoque, custo_unitario). Qual seria a consulta para exibir o nome_fornecedor em letras maiúsculas (UPPER), o nome_item (substituindo a palavra 'PECA' por 'Componente' usando REPLACE), e a quantidade_estoque, fazendo um FULL OUTER JOIN entre fornecedores e suprimentos, filtrando apenas os registros onde o custo_unitario seja menor ou igual a 80.00 (<=), a quantidade_estoque seja maior que 15 (>), a cidade_origem seja diferente de 'São Paulo' (<>), e o id_fornecedor seja um número múltiplo de 3 (MOD(fornecedores.id_fornecedor, 3) = 0)?
+
+SQL
+SELECT UPPER(forn.nome_fornecedor) AS nome_fornecedor, REPLACE(sup.nome_item, 'PECA', 'Componente') AS nome_do_item, sup.quantidade_estoque AS qtd_estoque
+FROM fornecedores AS forn
+FULL OUTER JOIN suprimentos AS sup ON forn.id_fornecedor = sup.fornecedor_id
+WHERE sup.custo_unitario <= 80.00
+AND sup.quantidade_estoque > 15
+AND forn.cidade_origem <> 'São Paulo'
+AND MOD(forn.id_fornecedor, 3) = 0
+ORDER BY forn.id_fornecedor ASC;
+7. Junção com INNER JOIN, Minúsculas (LOWER) e Intervalos Relacionais
+Enunciado: Considere a tabela vendas (com as colunas id_venda, vendedor_id, valor_venda, comissao) e a tabela vendedores (com as colunas id_vendedor, nome_vendedor, regiao). Qual seria a consulta para exibir o nome_vendedor em letras minúsculas (LOWER), o valor_venda e a regiao (substituindo a sigla 'SP' por 'São Paulo' usando REPLACE), fazendo um INNER JOIN entre vendas e vendedores, filtrando apenas as vendas onde o valor_venda seja menor que 10000.00 (<) e maior ou igual a 1500.00 (>=), a regiao contenha o termo 'Sul' (LIKE), o comprimento do nome_vendedor seja menor que 15 caracteres (LENGTH < 15), e o id_venda seja diferente de 100 (<>)?
+
+SQL
+SELECT LOWER(vend_s.nome_vendedor) AS nome_do_vendedor, vend.valor_venda, REPLACE(vend_s.regiao, 'SP', 'São Paulo') AS regiao_vendedores
+FROM vendedores AS vend_s
+INNER JOIN vendas AS vend ON vend_s.id_vendedor = vend.vendedor_id
+WHERE vend.valor_venda < 10000.00
+AND vend.valor_venda >= 1500.00
+AND vend_s.regiao LIKE '%Sul%'
+AND LENGTH(vend_s.nome_vendedor) < 15
+AND vend.id_venda <> 100
+ORDER BY vend.vendedor_id ASC;
+8. Junção com LEFT JOIN, Tratamento Nulo (COALESCE) e Busca Sem Case-Sensitivity (ILIKE)
+Enunciado: Considere a tabela cursos (com as colunas id_curso, nome_curso, carga_horaria, instrutor_id) e a tabela instrutores (com as colunas id_instrutor, nome_instrutor, especialidade). Qual seria a consulta para exibir o nome_curso, a carga_horaria e o nome_instrutor (substituindo valores nulos de instrutor por 'Sem Instrutor' usando COALESCE e alterando a palavra 'Dev' por 'Desenvolvimento' na especialidade usando REPLACE), fazendo um LEFT JOIN entre cursos e instrutores, filtrando apenas os cursos onde o nome_curso contenha a palavra 'sql' independentemente de maiúsculas ou minúsculas (ILIKE '%sql%'), a carga_horaria seja maior ou igual a 40 (>=), o id_curso seja menor que 50 (<), e o id_instrutor seja diferente de 1 (<> 1)?
+
+SQL
+SELECT crs.nome_curso, crs.carga_horaria, COALESCE(inst.nome_instrutor, 'Sem Instrutor') AS nome_do_instrutor, REPLACE(inst.especialidade, 'Dev', 'Desenvolvimento') AS especialidade
+FROM cursos AS crs
+LEFT JOIN instrutores AS inst ON crs.instrutor_id = inst.id_instrutor
+WHERE crs.nome_curso ILIKE '%sql%'
+AND crs.carga_horaria >= 40
+AND crs.id_curso < 50
+AND (inst.id_instrutor <> 1 OR inst.id_instrutor IS NULL)
+ORDER BY crs.nome_curso ASC;
+9. Junção com LEFT JOIN, Filtros de Texto e Operadores Lógicos
+Enunciado: Considere a tabela chamados (com as colunas id_chamado, titulo_chamado, prioridade, atendente_id) e a tabela atendentes (com as colunas id_atendente, nome_atendente, departamento_sigla). Qual seria a consulta para exibir o titulo_chamado, a prioridade e o nome_atendente (substituindo a sigla 'SUP' por 'Suporte Técnico' no departamento_sigla usando REPLACE), fazendo um LEFT JOIN entre chamados e atendentes, filtrando apenas os chamados cujo titulo_chamado contenha o termo 'Erro' (LIKE), onde a prioridade seja maior ou igual a 3 (>=), o comprimento do nome_atendente seja maior que 5 caracteres (LENGTH > 5), e o id_chamado seja um número ímpar (MOD(chamados.id_chamado, 2) <> 0)?
+
+SQL
+SELECT cmd.titulo_chamado, cmd.prioridade, atend.nome_atendente, REPLACE(atend.departamento_sigla, 'SUP', 'Suporte Técnico') AS departamento
+FROM chamados AS cmd
+LEFT JOIN atendentes AS atend ON cmd.atendente_id = atend.id_atendente
+WHERE cmd.titulo_chamado LIKE '%Erro%'
+AND cmd.prioridade >= 3
+AND (LENGTH(atend.nome_atendente) > 5 OR atend.nome_atendente IS NULL)
+AND MOD(cmd.id_chamado, 2) <> 0
+ORDER BY cmd.id_chamado ASC;
+10. Junção com INNER JOIN, Funções de Texto e Múltiplas Condições
+Enunciado: Considere a tabela veiculos (com as colunas id_veiculo, modelo, ano_fabricacao, proprietario_id, placa_estado) e a tabela proprietarios (com as colunas id_proprietario, nome_proprietario, categoria_cnh). Qual seria a consulta para exibir o modelo em letras maiúsculas (UPPER), a placa_estado (substituindo o termo 'SP' por 'São Paulo' usando REPLACE) e nome_proprietario, fazendo um INNER JOIN entre veiculos e proprietarios, filtrando apenas os veículos cujo ano_fabricacao seja maior ou igual a 2018 (>=) e menor que 2024 (<), onde o modelo não seja igual a 'Desconhecido' (<>), a categoria_cnh contenha a letra 'B' (LIKE), e o id_veiculo seja diferente de 100 (<> 100)?
+
+SQL
+SELECT UPPER(veic.modelo) AS modelo_veiculo, REPLACE(veic.placa_estado, 'SP', 'São Paulo') AS placa_estado, prop.nome_proprietario
+FROM veiculos AS veic
+INNER JOIN proprietarios AS prop ON veic.proprietario_id = prop.id_proprietario
+WHERE veic.ano_fabricacao >= 2018 
+AND veic.ano_fabricacao < 2024
+AND veic.modelo <> 'Desconhecido'
+AND prop.categoria_cnh LIKE '%B%'
+AND veic.id_veiculo <> 100
+ORDER BY veic.ano_fabricacao ASC;
+👨‍💻 Autor: Estudante do Curso de Administrador de Banco de Dados - IFRS.
+
+📌 Repositório focado no aprendizado contínuo de SQL e Gestão de Bancos de Dados.
